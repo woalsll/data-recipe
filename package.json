@@ -1,0 +1,18 @@
+{
+  "name": "data-recipe-demo",
+  "private": true,
+  "version": "1.0.0",
+  "description": "데이터 결합 레시피 시연판 (공개 메타데이터로 구성한 예시)",
+  "type": "module",
+  "scripts": {
+    "axes": "node scripts/extract_axes.mjs",
+    "dev": "npm run axes && vite",
+    "build": "npm run axes && vite build",
+    "preview": "vite preview",
+    "qr": "node scripts/make_qr.mjs"
+  },
+  "devDependencies": {
+    "qrcode": "^1.5.4",
+    "vite": "^6.3.5"
+  }
+}
