@@ -40,6 +40,18 @@ for (const d of datasets) {
   items[d.id] = { auto, axes, method: axes.length ? '규칙 1차 추출 + 직접 판독' : '규칙 1차 추출만' };
 }
 
+// 화면 건수 = datasets.json 건수 확인: 모든 데이터가 후보·재료이거나 그 근거 문장의 출처여야 함
+const recipes = read('data/recipes.json');
+const shown = new Set();
+for (const r of recipes) {
+  for (const id of [...r.topics.flatMap((t) => t.ids), ...r.graphOnlyTopic.ids]) {
+    if (!byId[id]) errors.push(`recipes ${r.id}: datasets.json 에 없는 ID ${id}`);
+    shown.add(id);
+    for (const a of manual[id] || []) if (a.evidenceFrom) shown.add(a.evidenceFrom);
+  }
+}
+for (const d of datasets) if (!shown.has(d.id)) errors.push(`${d.id} ${d.name}: 화면 어디에도 나오지 않음 → 빼거나 후보에 넣을 것`);
+
 if (errors.length) {
   console.error(errors.join('\n'));
   process.exit(1);

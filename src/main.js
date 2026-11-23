@@ -23,6 +23,14 @@ const kind = (d) => (d.kind === 'Open API' ? 'Open API · 인증키' : '파일')
 const ext = (d, text, cls = '') =>
   `<a class="${cls}" href="${d.url}" target="_blank" rel="noopener" title="${esc(d.name)} — 공공데이터포털">${text}</a>`;
 
+// 화면에 실제로 나오는 데이터: 후보·재료 + 그들의 근거 문장을 빌려 온 데이터(evidenceFrom)
+function idsFor(r) {
+  const base = [...r.topics.flatMap((t) => t.ids), ...r.graphOnlyTopic.ids];
+  const src = base.flatMap((id) => (AX[id]?.axes || []).map((a) => a.evidenceFrom).filter(Boolean));
+  return [...new Set([...base, ...src])];
+}
+const SHOWN_N = new Set(recipes.flatMap(idsFor)).size;
+
 const state = { q: 'q1', tab: 'graph' };
 
 function readHash() {
@@ -237,7 +245,8 @@ function graphSection(r) {
 
 /* ---------- 메타데이터 표 ---------- */
 function metaSection(r) {
-  const ids = [...new Set([...r.topics.flatMap((t) => t.ids), ...r.graphOnlyTopic.ids])];
+  const ids = idsFor(r);
+  const use = (s) => (!s ? '근거 인용' : s.pick ? '재료' : '후보');
   const empty = ids.filter((id) => !DS[id].spatialRange && !DS[id].temporalRange).length;
   const cell = (v) => (v ? esc(v) : '<span class="blank">공란</span>');
   return `<section class="block" aria-labelledby="mh">
@@ -250,7 +259,7 @@ function metaSection(r) {
       <tbody>${ids
         .map((id) => {
           const d = DS[id], s = r.selection[id];
-          return `<tr class="${s.pick ? 'is-pick' : ''}"><td>${ext(d, esc(shortName(d)))}</td><td>${esc(d.provider)}</td><td>${esc(d.kind)}</td><td>${cell(d.spatialRange)}</td><td>${cell(d.temporalRange)}</td><td>${s.pick ? '재료' : '후보'}</td></tr>`;
+          return `<tr class="${s?.pick ? 'is-pick' : ''}"><td>${ext(d, esc(shortName(d)))}</td><td>${esc(d.provider)}</td><td>${esc(d.kind)}</td><td>${cell(d.spatialRange)}</td><td>${cell(d.temporalRange)}</td><td${s ? '' : ' title="후보 비교에 쓴 설명문 인용의 출처"'}>${use(s)}</td></tr>`;
         })
         .join('')}</tbody>
     </table></div>
@@ -264,7 +273,7 @@ function render() {
   document.getElementById('app').innerHTML = `
   <header class="mast">
     <div class="brand"><h1>데이터 결합 레시피</h1><span>시연판</span></div>
-    <p>공개 메타데이터 ${datasets.length}건 · 레시피 ${recipes.length}종 · ${CHECKED} 기준</p>
+    <p>공개 메타데이터 ${SHOWN_N}건 · 레시피 ${recipes.length}종 · ${CHECKED} 기준</p>
   </header>
 
   <nav class="qs" aria-label="시연 질문">
@@ -304,7 +313,7 @@ function render() {
 
   <footer class="foot">
     <div><b>공모전 제안 시연판</b><p>공개 메타데이터로 구성한 예시이며 원-윈도우 공식 서비스가 아님. 원-윈도우 AI 검색 API는 호출하지 않음.</p></div>
-    <div><b>자료</b><p>공공데이터포털 상세 페이지의 공개 메타데이터 ${datasets.length}건(데이터명·제공기관·설명문·키워드·공간/시간범위, ${CHECKED} 확인). 조건 1은 기획서 근거①의 2026.11.20 실측 요약.</p></div>
+    <div><b>자료</b><p>공공데이터포털 상세 페이지의 공개 메타데이터 ${SHOWN_N}건(데이터명·제공기관·설명문·키워드·공간/시간범위, ${CHECKED} 확인). 조건 1은 기획서 근거①의 2026.11.20 실측 요약.<br>재료로 쓴 데이터는 모두 원-윈도우 검색으로 등록을 확인함(2026.11.23).</p></div>
     <div><b>신뢰등급</b><p>A ${esc(axesFile.gradeRule.A)}<br>B ${esc(axesFile.gradeRule.B)}<br>C ${esc(axesFile.gradeRule.C)}<br>설명문에서 규칙으로 1차 추출 후 직접 판독, 근거 문장은 원문과 대조.</p></div>
     <div><b>이 페이지</b><p>분석·추적 스크립트, 외부 요청, 로그인 없음.</p></div>
   </footer>`;
