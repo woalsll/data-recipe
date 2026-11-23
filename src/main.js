@@ -314,7 +314,7 @@ function render() {
   <footer class="foot">
     <div><b>공모전 제안 시연판</b><p>공개 메타데이터로 구성한 예시이며 원-윈도우 공식 서비스가 아님. 원-윈도우 AI 검색 API는 호출하지 않음.</p></div>
     <div><b>자료</b><p>공공데이터포털 상세 페이지의 공개 메타데이터 ${SHOWN_N}건(데이터명·제공기관·설명문·키워드·공간/시간범위, ${CHECKED} 확인). 조건 1은 기획서 근거①의 2026.11.20 실측 요약.<br>재료로 쓴 데이터는 모두 원-윈도우 검색으로 등록을 확인함(2026.11.23).</p></div>
-    <div><b>신뢰등급</b><p>A ${esc(axesFile.gradeRule.A)}<br>B ${esc(axesFile.gradeRule.B)}<br>C ${esc(axesFile.gradeRule.C)}<br>설명문에서 규칙으로 1차 추출 후 직접 판독, 근거 문장은 원문과 대조.</p></div>
+    <div><b>신뢰등급</b><p>A ${esc(axesFile.gradeRule.A)}<br>B ${esc(axesFile.gradeRule.B)}<br>C ${esc(axesFile.gradeRule.C)}<br>설명문에서 규칙으로 1차 추출 후 직접 판독, 근거 문장은 원문과 대조.<br>결합축 = 공간·시간·식별자·대상 범주. 판정 때 집계 단위(원시 기록·통계)도 확인.</p></div>
     <div><b>이 페이지</b><p>분석·추적 스크립트, 외부 요청, 로그인 없음.</p></div>
   </footer>`;
 }
