@@ -337,16 +337,41 @@ document.addEventListener('click', (e) => {
     return;
   }
   const c = e.target.closest('[data-copy]');
-  if (c) {
-    const url = `${location.href.split('#')[0]}#${state.q}`;
-    const done = () => {
-      c.textContent = '복사됨';
-      setTimeout(() => (c.textContent = '레시피 링크 복사'), 1600);
-    };
-    if (navigator.clipboard?.writeText) navigator.clipboard.writeText(url).then(done, () => prompt('링크를 복사하세요', url));
-    else prompt('링크를 복사하세요', url);
-  }
+  if (c) copyLink(c);
 });
+
+// 클립보드 API → 숨긴 textarea 복사 → (둘 다 막히면) 링크를 선택된 입력칸으로 보여 줌. prompt() 는 쓰지 않음
+async function copyLink(btn) {
+  const url = `${location.origin}${location.pathname}#${state.q}`;
+  let ok = false;
+  try {
+    await navigator.clipboard.writeText(url);
+    ok = true;
+  } catch {
+    try {
+      const ta = Object.assign(document.createElement('textarea'), { value: url, readOnly: true });
+      ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0';
+      document.body.appendChild(ta);
+      ta.select();
+      ok = document.execCommand('copy');
+      ta.remove();
+    } catch {
+      ok = false;
+    }
+  }
+  const foot = btn.closest('.r-foot');
+  foot.querySelector('.copy-fallback')?.remove();
+  if (ok) {
+    btn.textContent = '복사됨';
+    setTimeout(() => (btn.textContent = '레시피 링크 복사'), 1600);
+    return;
+  }
+  const box = Object.assign(document.createElement('input'), { className: 'copy-fallback', value: url, readOnly: true });
+  box.setAttribute('aria-label', '레시피 링크 — 길게 눌러 복사');
+  btn.after(box);
+  box.focus();
+  box.select();
+}
 
 document.addEventListener('keydown', (e) => {
   const t = e.target.closest?.('[role="tab"]');
