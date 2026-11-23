@@ -17,7 +17,8 @@
 
 - 근거 문장은 `scripts/extract_axes.mjs`가 설명문 원문과 글자 단위로 대조하고, 원문에 없으면 빌드가 실패한다.
 - 원-윈도우 AI 검색 API는 호출하지 않는다. 정확도·재현율 같은 수치는 넣지 않는다.
-- 분석·추적 스크립트, 외부 글꼴, 로그인 없음.
+- 분석·추적 스크립트, 외부 요청, 로그인 없음.
+- 글꼴: Pretendard (SIL Open Font License 1.1) — 저장소에 포함해 배포, 라이선스 `public/Pretendard-LICENSE.txt`.
 
 ## 실행
 ```

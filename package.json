@@ -14,5 +14,8 @@
   "devDependencies": {
     "qrcode": "^1.5.4",
     "vite": "^6.3.5"
+  },
+  "dependencies": {
+    "pretendard": "^1.3.9"
   }
 }
